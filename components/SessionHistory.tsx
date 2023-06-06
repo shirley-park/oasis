@@ -10,8 +10,8 @@ const SessionHistoryItem = ({ session }: { session: Session }) => {
   return (
     <div
       key={session.startTime}
-      className={`border rounded-lg p-2 h-24 w-full flex justify-between items-center my-2 ${
-        session.isSuccess ? 'bg-green-500' : 'bg-red-500'
+      className={`border-none rounded-lg p-2 h-24 w-full flex justify-between items-center my-2 ${
+        session.isSuccess ? 'bg-lime-400' : 'bg-orange-500'
       }`}
     >
       <div>
