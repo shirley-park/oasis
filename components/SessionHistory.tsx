@@ -1,24 +1,47 @@
 'use client'
 import { useSessionHistory, Session } from '@/hooks/useSessionHistory'
 import { useState } from 'react'
+import Image from 'next/image'
 
 const SessionHistoryItem = ({ session }: { session: Session }) => {
-  // const d = new Date(session.startTime)
-
   const [d] = useState(new Date(session.startTime))
-  console.log(session.isSuccess)
+
   return (
     <div
       key={session.startTime}
-      className={`border-none rounded-lg p-2 h-24 w-full flex justify-between items-center my-2 ${
-        session.isSuccess ? 'bg-lime-400' : 'bg-orange-500'
+      className={`rounded-lg p-8 h-24 w-[70%] flex justify-between items-center my-4 ${
+        session.isSuccess
+          ? 'border-4 border-lime-600 bg-lime-200 '
+          : 'border-4 border-red-600 bg-red-300'
       }`}
     >
       <div>
-        <p>Date: {d.toDateString()}</p>
-        <p>Duration: {session.duration} minutes</p>
+        <p>{d.toLocaleDateString()}</p>
+        <p>
+          {session.isSuccess
+            ? `${session.duration} minutes`
+            : 'you killed a tree'}
+        </p>
       </div>
-      <div>{session.isSuccess ? 'tree' : 'meteor'}</div>
+      <div>
+        {session.isSuccess ? (
+          <Image
+            src="/images/palmtree.svg"
+            alt="palm tree"
+            width="0"
+            height="0"
+            style={{ width: '50px', height: 'auto' }}
+          />
+        ) : (
+          <Image
+            src="/images/deadtree.svg"
+            alt="dead palm tree"
+            width="0"
+            height="0"
+            style={{ width: '50px', height: 'auto' }}
+          />
+        )}
+      </div>
     </div>
   )
 }
@@ -28,13 +51,17 @@ export const SessionHistory = () => {
     sessions: s.sessions,
   }))
 
+  const sortByMostRecent = sessions.sort((objA, objB) =>
+    Number(objB.startTime - objA.startTime)
+  )
+
   return (
     <>
-      <div className={'h-screen'}>
-        <h2>Your session history</h2>
-        {sessions.map((session) => (
+      <div className=" h-screen w-full bg-sand flex flex-col items-center">
+        <h2 className="text-lg mb-6">Your session history</h2>
+        {sortByMostRecent.map((session) => (
           <SessionHistoryItem key={session.startTime} session={session} />
-        ))}
+        ))}{' '}
       </div>
     </>
   )
