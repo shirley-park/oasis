@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Countdown, { zeroPad } from 'react-countdown'
 import { useSessionHistory } from '../hooks/useSessionHistory'
 import { useLeavePageConfirm } from '../components/UseLeave'
 import Image from 'next/image'
 import { SessionHistory } from './SessionHistory'
+import { useTreeHistory } from '@/hooks/useTreeHistory'
+import { TreesPlantedHistory } from './TreesPlantedHistory'
+import palmtree from '../public/images/palmtree.svg'
 
 const SECOND = 1000
 const MINUTE = SECOND * 60
@@ -12,22 +15,31 @@ const HOUR = MINUTE * 60
 export const Timer = () => {
   useLeavePageConfirm(true)
   const [endTime, setEndTime] = useState<number | undefined>()
-  const [timeInput, setTimeInput] = useState<number>(0) //minutes
+  const [timeInput, setTimeInput] = useState<number>(1) //minutes
   const { sessions, addSession } = useSessionHistory((s) => ({
     sessions: s.sessions,
     addSession: s.addSession,
   }))
-  console.log({ sessions })
+  const { addTree } = useTreeHistory((s) => ({
+    addTree: s.addTree,
+  }))
+
   const handleClick = (e: React.FormEvent) => {
     e.preventDefault()
 
-    addSession({ startTime: Date.now(), duration: timeInput })
-    setEndTime(Date.now() + timeInput * MINUTE)
+    setEndTime(Date.now() + timeInput * SECOND)
   }
 
   const handleChangeTimeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value)
     setTimeInput(value)
+  }
+
+  const handlePlantTree = (e: React.FormEvent) => {
+    e.preventDefault()
+    addSession({ startTime: Date.now(), duration: timeInput, isSuccess: true })
+    addTree({ id: Date.now(), tree: palmtree })
+    setEndTime(undefined)
   }
 
   return (
@@ -38,31 +50,37 @@ export const Timer = () => {
         width={400}
         height={900}
         className="absolute left-0 top-0 w-full object-cover mix-blend-overlay z-[-1] h-full"
+        priority={false}
       />
       <Image
         src="/images/oasislogo.svg"
         alt="oasis image"
-        width={170}
-        height={100}
-        className="absolute top-28"
+        width="0"
+        height="0"
+        className="absolute top-20"
+        priority={false}
+        style={{ width: '40%', height: 'auto' }}
       />
-      <div className="h-screen flex items-center">
+      <TreesPlantedHistory />
+      <div className="h-[95vh] flex items-center ">
         {!endTime && (
-          <div className="border-2 p-6 rounded-lg backdrop-hue-rotate-90 backdrop-opacity-30">
-            <form action="" className="flex flex-col items-center gap-4">
-              <h1 className="text-md text-center">Focus and grow your oasis</h1>
-              <label htmlFor="timeInput" hidden></label>
+          <div className=" border-2 p-6 rounded-lg backdrop-hue-rotate-90 backdrop-opacity-20">
+            <form
+              action=""
+              className="flex flex-col items-center gap-6 h-screens"
+            >
+              <h1 className="text-lg text-center">Focus and grow your oasis</h1>
+              <label htmlFor="timeInput">time (minutes)</label>
               <input
                 id="timeInput"
                 type="number"
-                defaultValue="1"
                 value={timeInput}
                 onChange={handleChangeTimeInput}
                 className="
                   rounded-lg p-4 text-center w-[200px]"
               ></input>
               <button
-                className=" bg-blue-400 hover:bg-blue-500 text-white rounded-3xl px-4 py-2 text-sm"
+                className=" bg-blue-400 hover:bg-blue-500 text-white rounded-3xl px-4 py-2 "
                 onClick={handleClick}
               >
                 Start timer
@@ -77,9 +95,22 @@ export const Timer = () => {
             renderer={({ hours, minutes, seconds, completed }) => {
               if (completed) {
                 return (
-                  <>
-                    <p>WOOHOO!</p>
-                  </>
+                  <div className="border-2 p-6 rounded-lg backdrop-hue-rotate-90 backdrop-opacity-20 flex flex-col items-center gap-6">
+                    <h3>Nice one!</h3>
+                    <p>You&apos;ve finished your session</p>
+                    <Image
+                      src="/images/palmtree.svg"
+                      alt="palm tree"
+                      width={60}
+                      height={60}
+                    />
+                    <button
+                      className="bg-lime-600 hover:bg-lime-700 text-white rounded-3xl px-4 py-2 "
+                      onClick={handlePlantTree}
+                    >
+                      plant tree
+                    </button>
+                  </div>
                 )
               }
               return (
