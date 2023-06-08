@@ -10,9 +10,7 @@ const SessionHistoryItem = ({ session }: { session: Session }) => {
     <div
       key={session.startTime}
       className={`rounded-lg p-8 h-24 w-[70%] flex justify-between items-center my-4 ${
-        session.isSuccess
-          ? 'border-4 border-lime-600 bg-lime-200 '
-          : 'border-4 border-red-600 bg-red-300'
+        session.isSuccess ? '  bg-success ' : ' bg-incomplete'
       }`}
     >
       <div>
@@ -57,8 +55,8 @@ export const SessionHistory = () => {
 
   return (
     <>
-      <div className=" h-screen w-full bg-sand flex flex-col items-center">
-        <h2 className="text-lg mb-6">Your session history</h2>
+      <div className="h-screen w-full bg-sand flex flex-col items-center">
+        <h2 className="text-lg mb-4">Your session history</h2>
         {sortByMostRecent.map((session) => (
           <SessionHistoryItem key={session.startTime} session={session} />
         ))}{' '}

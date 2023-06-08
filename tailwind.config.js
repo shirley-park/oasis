@@ -16,6 +16,8 @@ module.exports = {
         transparent: 'transparent',
         current: 'currentColor',
         sand: '#F0C678',
+        success: '#A1C862',
+        incomplete: '#EE8282',
       },
     },
   },
