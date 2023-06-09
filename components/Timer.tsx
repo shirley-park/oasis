@@ -59,7 +59,7 @@ export const Timer = () => {
         height="0"
         className="absolute top-20"
         priority={false}
-        style={{ width: '40%', height: 'auto' }}
+        style={{ width: '25%', height: 'auto' }}
       />
       <TreesPlantedHistory />
       <div className="h-[95vh] flex items-center ">

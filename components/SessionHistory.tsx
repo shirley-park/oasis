@@ -55,7 +55,7 @@ export const SessionHistory = () => {
 
   return (
     <>
-      <div className="h-screen w-full bg-sand flex flex-col items-center">
+      <div className="h-full w-full bg-sand flex flex-col items-center">
         <h2 className="text-lg mb-4">Your session history</h2>
         {sortByMostRecent.map((session) => (
           <SessionHistoryItem key={session.startTime} session={session} />
