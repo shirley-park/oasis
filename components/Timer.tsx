@@ -1,34 +1,45 @@
 import { useState, useEffect } from 'react'
 import Countdown, { zeroPad } from 'react-countdown'
 import { useSessionHistory } from '../hooks/useSessionHistory'
-import { useLeavePageConfirm } from '../components/UseLeave'
 import Image from 'next/image'
 import { SessionHistory } from './SessionHistory'
-import { useTreeHistory } from '@/hooks/useTreeHistory'
+import { useSessionsWithTrees } from '@/hooks/useTreeHistory'
 import { TreesPlantedHistory } from './TreesPlantedHistory'
 import palmtree from '../public/images/palmtree.svg'
+import { useHasFocus } from '@/hooks/useHasFocus'
+import { useSession } from '@/hooks/useSession'
 
 const SECOND = 1000
 const MINUTE = SECOND * 60
 const HOUR = MINUTE * 60
 
 export const Timer = () => {
-  useLeavePageConfirm(true)
-  const [endTime, setEndTime] = useState<number | undefined>()
+  const { startTime, duration, startSession, completeSession } = useSession()
+  const endTime = startTime && duration ? startTime + duration : undefined
+
   const [timeInput, setTimeInput] = useState<number>(1) //minutes
   const { sessions, addSession } = useSessionHistory((s) => ({
     sessions: s.sessions,
     addSession: s.addSession,
   }))
-  const { addTree } = useTreeHistory((s) => ({
-    addTree: s.addTree,
-  }))
+
+  const focus = useHasFocus()
+  useEffect(() => {
+    if (!endTime) return
+
+    if (!focus) {
+      console.log('lost focus')
+    }
+    console.log(focus)
+  }, [focus, endTime])
 
   const handleClick = (e: React.FormEvent) => {
     e.preventDefault()
 
-    setEndTime(Date.now() + timeInput * SECOND)
+    // add current session to localstorage for resume functionality purposes
+    startSession(timeInput * 1000)
   }
+  console.log(startTime, duration)
 
   const handleChangeTimeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value)
@@ -37,9 +48,17 @@ export const Timer = () => {
 
   const handlePlantTree = (e: React.FormEvent) => {
     e.preventDefault()
-    addSession({ startTime: Date.now(), duration: timeInput, isSuccess: true })
-    addTree({ id: Date.now(), tree: palmtree })
-    setEndTime(undefined)
+    completeSession()
+
+    const tree = { image: palmtree }
+    addSession({
+      startTime: Date.now(),
+      duration: timeInput,
+      status: 'success',
+      tree,
+    })
+
+    setTimeInput(1)
   }
 
   return (
@@ -113,6 +132,7 @@ export const Timer = () => {
                   </div>
                 )
               }
+              console.log({ hours, minutes, seconds })
               return (
                 <>
                   <div>

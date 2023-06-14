@@ -6,23 +6,31 @@ import Image from 'next/image'
 const SessionHistoryItem = ({ session }: { session: Session }) => {
   const [d] = useState(new Date(session.startTime))
 
+  const isSuccess = session.status === 'success'
+  const isPending = session.status === 'pending'
+  const isFail = session.status === 'fail'
+
+  const bgColor = () => {
+    switch (session.status) {
+      case 'success':
+        return 'bg-success'
+      case 'pending':
+        return 'bg-pending'
+      case 'fail':
+        return 'bg-warning'
+    }
+  }
+
   return (
     <div
-      key={session.startTime}
-      className={`rounded-lg p-8 h-24 w-[70%] flex justify-between items-center my-4 ${
-        session.isSuccess ? '  bg-success ' : ' bg-incomplete'
-      }`}
+      className={`rounded-lg p-8 h-24 w-[70%] flex justify-between items-center my-4 ${bgColor()}`}
     >
       <div>
         <p>{d.toLocaleDateString()}</p>
-        <p>
-          {session.isSuccess
-            ? `${session.duration} minutes`
-            : 'you killed a tree'}
-        </p>
+        <p>{isSuccess ? `${session.duration} minutes` : 'you killed a tree'}</p>
       </div>
       <div>
-        {session.isSuccess ? (
+        {isSuccess ? (
           <Image
             src="/images/palmtree.svg"
             alt="palm tree"
