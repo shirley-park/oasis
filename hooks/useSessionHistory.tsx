@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { Tree } from './useTreeHistory'
 
-type SessionStatus = 'pending' | 'success' | 'fail'
+export type SessionStatus = 'success' | 'fail'
 
 export type Session = {
   startTime: number

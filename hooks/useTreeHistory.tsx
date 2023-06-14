@@ -29,11 +29,6 @@ type Trees = Array<Tree>
 export const useSessionsWithTrees = () => {
   const { sessions } = useSessionHistory((s) => ({ sessions: s.sessions }))
   const trees = sessions.filter((session) => {
-    // session.tree === undefined
-    // !!undefined === false
-
-    // session.tree === {}
-    // !!{} === true
     // tree definitely exists in session
     return !!session.tree
   })

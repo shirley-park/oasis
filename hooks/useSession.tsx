@@ -1,12 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { SessionStatus } from './useSessionHistory'
 
 export const useSession = () => {
   const [startTime, setStartTime] = useState<number | undefined>()
   const [duration, setDuration] = useState<number | undefined>()
 
-  // add in a ue for retrieving the session from localstorage
-  // add in a start session which sets endTime, and also sets it to the local storage
-  // add in complete session
+  const [status, setStatus] = useState<SessionStatus | undefined>()
+
+  const clearSession = () => {
+    setStartTime(undefined)
+    setDuration(undefined)
+  }
+
   const startSession = (duration: number) => {
     const now = Date.now()
     setStartTime(now)
@@ -21,10 +26,6 @@ export const useSession = () => {
   }
   // for resume functionality
   useEffect(() => {
-    if (startTime) return
-    // check local storage for a session
-    // if there is one set the start time
-
     const getSession = () => {
       const maybeSession = localStorage.getItem('session')
       if (!maybeSession) return
@@ -38,13 +39,33 @@ export const useSession = () => {
 
     setStartTime(session.startTime)
     setDuration(session.duration)
-  }, [startTime])
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const completeSession = () => {
     localStorage.removeItem('session')
-    setStartTime(undefined)
-    setDuration(undefined)
+    clearSession()
   }
 
-  return { startTime, duration, startSession, completeSession }
+  const cancelSession = useCallback(() => {
+    clearSession()
+    setStatus('fail')
+  }, [])
+
+  // completely resets the session to initial state
+  const resetSession = useCallback(() => {
+    clearSession()
+    setStatus(undefined)
+  }, [])
+
+  return {
+    startTime,
+    duration,
+    status,
+    cancelSession,
+    resetSession,
+    startSession,
+    completeSession,
+  }
 }

@@ -5,17 +5,12 @@ import Image from 'next/image'
 
 const SessionHistoryItem = ({ session }: { session: Session }) => {
   const [d] = useState(new Date(session.startTime))
-
   const isSuccess = session.status === 'success'
-  const isPending = session.status === 'pending'
-  const isFail = session.status === 'fail'
 
   const bgColor = () => {
     switch (session.status) {
       case 'success':
         return 'bg-success'
-      case 'pending':
-        return 'bg-pending'
       case 'fail':
         return 'bg-warning'
     }
@@ -63,7 +58,7 @@ export const SessionHistory = () => {
 
   return (
     <>
-      <div className="h-full w-full bg-sand flex flex-col items-center">
+      <div className="h-full w-full bg-sand flex flex-col items-center ">
         <h2 className="text-lg mb-4">Your session history</h2>
         {sortByMostRecent.map((session) => (
           <SessionHistoryItem key={session.startTime} session={session} />
