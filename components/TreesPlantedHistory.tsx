@@ -1,6 +1,5 @@
 'use client'
-import { useTreeHistory, Tree } from '@/hooks/useTreeHistory'
-import { useState } from 'react'
+import { useSessionsWithTrees } from '@/hooks/useTreeHistory'
 import Image from 'next/image'
 
 const SingleTree = () => {
@@ -21,14 +20,12 @@ const SingleTree = () => {
 }
 
 export const TreesPlantedHistory = () => {
-  const { trees } = useTreeHistory((s) => ({
-    trees: s.trees,
-  }))
+  const sessions = useSessionsWithTrees()
 
   return (
     <div className="absolute top-[72%] w-full flex flex-wrap">
-      {trees.map((tree) => (
-        <SingleTree key={tree.id} />
+      {sessions.map((session) => (
+        <SingleTree key={session.startTime} />
       ))}
     </div>
   )

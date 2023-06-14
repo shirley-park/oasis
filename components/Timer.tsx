@@ -1,33 +1,58 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import Countdown, { zeroPad } from 'react-countdown'
 import { useSessionHistory } from '../hooks/useSessionHistory'
-import { useLeavePageConfirm } from '../components/UseLeave'
 import Image from 'next/image'
 import { SessionHistory } from './SessionHistory'
-import { useTreeHistory } from '@/hooks/useTreeHistory'
+import { useSessionsWithTrees } from '@/hooks/useTreeHistory'
 import { TreesPlantedHistory } from './TreesPlantedHistory'
 import palmtree from '../public/images/palmtree.svg'
+import deadtree from '../public/images/deadtree.svg'
+import { useHasFocus } from '@/hooks/useHasFocus'
+import { useSession } from '@/hooks/useSession'
 
 const SECOND = 1000
 const MINUTE = SECOND * 60
 const HOUR = MINUTE * 60
 
 export const Timer = () => {
-  useLeavePageConfirm(true)
-  const [endTime, setEndTime] = useState<number | undefined>()
+  const {
+    startTime,
+    duration,
+    startSession,
+    completeSession,
+    cancelSession,
+    resetSession,
+    status,
+  } = useSession()
+  const endTime = startTime && duration ? startTime + duration : undefined
+
   const [timeInput, setTimeInput] = useState<number>(1) //minutes
   const { sessions, addSession } = useSessionHistory((s) => ({
     sessions: s.sessions,
     addSession: s.addSession,
   }))
-  const { addTree } = useTreeHistory((s) => ({
-    addTree: s.addTree,
-  }))
+
+  const focus = useHasFocus()
+  useEffect(() => {
+    if (!endTime) return
+
+    if (!focus) {
+      console.log('lost focus')
+      cancelSession()
+      const tree = { image: deadtree }
+      addSession({
+        startTime: Date.now(),
+        duration: 0,
+        status: 'fail',
+      })
+    }
+  }, [focus, endTime, cancelSession, addSession])
 
   const handleClick = (e: React.FormEvent) => {
     e.preventDefault()
 
-    setEndTime(Date.now() + timeInput * SECOND)
+    // add current session to localstorage for resume functionality purposes
+    startSession(timeInput * 1000)
   }
 
   const handleChangeTimeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,9 +62,24 @@ export const Timer = () => {
 
   const handlePlantTree = (e: React.FormEvent) => {
     e.preventDefault()
-    addSession({ startTime: Date.now(), duration: timeInput, isSuccess: true })
-    addTree({ id: Date.now(), tree: palmtree })
-    setEndTime(undefined)
+    completeSession()
+
+    const tree = { image: palmtree }
+    addSession({
+      startTime: Date.now(),
+      duration: timeInput,
+      status: 'success',
+      tree,
+    })
+
+    setTimeInput(1)
+  }
+
+  console.log(status)
+  const isFailed = status === 'fail'
+
+  const handleRefresh = () => {
+    resetSession()
   }
 
   return (
@@ -47,8 +87,8 @@ export const Timer = () => {
       <Image
         src="/images/oasis.svg"
         alt="oasis image"
-        width={400}
-        height={900}
+        width={0}
+        height={0}
         className="absolute left-0 top-0 w-full object-cover mix-blend-overlay z-[-1] h-full"
         priority={false}
       />
@@ -59,12 +99,31 @@ export const Timer = () => {
         height="0"
         className="absolute top-20"
         priority={false}
-        style={{ width: '40%', height: 'auto' }}
+        style={{ width: '25%', height: 'auto' }}
       />
       <TreesPlantedHistory />
       <div className="h-[95vh] flex items-center ">
-        {!endTime && (
-          <div className=" border-2 p-6 rounded-lg backdrop-hue-rotate-90 backdrop-opacity-20">
+        {isFailed && (
+          <div className="p-6 rounded-lg backdrop-hue-rotate-90 backdrop-opacity-20 flex flex-col items-center gap-6 bg-warning">
+            <h3>Good one. </h3>
+            <p>You&apos;ve killed your tree</p>
+            <Image
+              src="/images/deadtree.svg"
+              alt="palm tree"
+              width={60}
+              height={60}
+            />
+
+            <button
+              className=" bg-amber-700 hover:bg-amber-800 text-white rounded-3xl px-4 py-2 "
+              onClick={handleRefresh}
+            >
+              Do better next time
+            </button>
+          </div>
+        )}
+        {!endTime && !isFailed && (
+          <div className="border-2 p-6 rounded-lg backdrop-hue-rotate-90 backdrop-opacity-20">
             <form
               action=""
               className="flex flex-col items-center gap-6 h-screens"
@@ -80,7 +139,7 @@ export const Timer = () => {
                   rounded-lg p-4 text-center w-[200px]"
               ></input>
               <button
-                className=" bg-blue-400 hover:bg-blue-500 text-white rounded-3xl px-4 py-2 "
+                className="bg-blue-400 hover:bg-blue-500 text-white rounded-3xl px-4 py-2"
                 onClick={handleClick}
               >
                 Start timer
@@ -113,6 +172,7 @@ export const Timer = () => {
                   </div>
                 )
               }
+
               return (
                 <>
                   <div>
