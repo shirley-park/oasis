@@ -26,7 +26,7 @@ export const Timer = () => {
   } = useSession()
   const endTime = startTime && duration ? startTime + duration : undefined
 
-  const [timeInput, setTimeInput] = useState<number>(1) //minutes
+  const [timeInput, setTimeInput] = useState<number>(25) //minutes
   const { sessions, addSession } = useSessionHistory((s) => ({
     sessions: s.sessions,
     addSession: s.addSession,
@@ -37,7 +37,6 @@ export const Timer = () => {
     if (!endTime) return
 
     if (!focus) {
-      console.log('lost focus')
       cancelSession()
       const tree = { image: deadtree }
       addSession({
@@ -52,7 +51,7 @@ export const Timer = () => {
     e.preventDefault()
 
     // add current session to localstorage for resume functionality purposes
-    startSession(timeInput * 1000)
+    startSession(timeInput * MINUTE)
   }
 
   const handleChangeTimeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +74,6 @@ export const Timer = () => {
     setTimeInput(1)
   }
 
-  console.log(status)
   const isFailed = status === 'fail'
 
   const handleRefresh = () => {
