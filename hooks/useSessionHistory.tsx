@@ -1,3 +1,4 @@
+'use client'
 import { create } from 'zustand'
 import { Tree } from './useTreeHistory'
 
@@ -38,6 +39,7 @@ export const useSessionHistory = create<SessionHistoryState>((set) => ({
   addSession: (session) =>
     set((state) => {
       const newState = [...state.sessions, session]
+
       localStorage.setItem('sessionHistory', JSON.stringify(newState))
       return { sessions: newState }
     }),

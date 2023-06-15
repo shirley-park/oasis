@@ -6,7 +6,6 @@ import Image from 'next/image'
 import { SessionHistory } from './SessionHistory'
 import { TreesPlantedHistory } from './TreesPlantedHistory'
 import palmtree from '../public/images/palmtree.svg'
-import deadtree from '../public/images/deadtree.svg'
 import { useHasFocus } from '@/hooks/useHasFocus'
 import { useSession } from '@/hooks/useSession'
 
