@@ -4,7 +4,6 @@ import Countdown, { zeroPad } from 'react-countdown'
 import { useSessionHistory } from '../hooks/useSessionHistory'
 import Image from 'next/image'
 import { SessionHistory } from './SessionHistory'
-import { useSessionsWithTrees } from '@/hooks/useTreeHistory'
 import { TreesPlantedHistory } from './TreesPlantedHistory'
 import palmtree from '../public/images/palmtree.svg'
 import deadtree from '../public/images/deadtree.svg'
@@ -27,7 +26,7 @@ export const Timer = () => {
   } = useSession()
   const endTime = startTime && duration ? startTime + duration : undefined
 
-  const [timeInput, setTimeInput] = useState<number>(25) //minutes
+  const [timeInput, setTimeInput] = useState<number>(2) //minutes
   const { sessions, addSession } = useSessionHistory((s) => ({
     sessions: s.sessions,
     addSession: s.addSession,
@@ -39,7 +38,6 @@ export const Timer = () => {
 
     if (!focus) {
       cancelSession()
-      const tree = { image: deadtree }
       addSession({
         startTime: Date.now(),
         duration: 0,
@@ -52,7 +50,7 @@ export const Timer = () => {
     e.preventDefault()
 
     // add current session to localstorage for resume functionality purposes
-    startSession(timeInput * MINUTE)
+    startSession(timeInput * SECOND)
   }
 
   const handleChangeTimeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
