@@ -1,3 +1,4 @@
+'use client'
 import { useCallback, useEffect, useState } from 'react'
 import { SessionStatus } from './useSessionHistory'
 
