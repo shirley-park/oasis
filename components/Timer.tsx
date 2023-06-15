@@ -14,6 +14,14 @@ const MINUTE = SECOND * 60
 const HOUR = MINUTE * 60
 
 export const Timer = () => {
+  const [sessionHist, setSessions] = useState({})
+
+  useEffect(() => {
+    // @ts-ignore
+    const sessionHist = JSON.parse(localStorage.getItem('sessionHistory')) || {}
+    setSessions(sessionHist)
+  }, [])
+
   const {
     startTime,
     duration,
