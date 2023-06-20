@@ -4,7 +4,6 @@ import Countdown, { zeroPad } from 'react-countdown'
 import { useSessionHistory } from '../hooks/useSessionHistory'
 import Image from 'next/image'
 import { SessionHistory } from './SessionHistory'
-import { useSessionsWithTrees } from '@/hooks/useTreeHistory'
 import { TreesPlantedHistory } from './TreesPlantedHistory'
 import palmtree from '../public/images/palmtree.svg'
 import deadtree from '../public/images/deadtree.svg'
@@ -72,7 +71,7 @@ export const Timer = () => {
       tree,
     })
 
-    setTimeInput(1)
+    setTimeInput(25)
   }
 
   const isFailed = status === 'fail'
@@ -104,7 +103,7 @@ export const Timer = () => {
       <div className="h-[95vh] flex items-center ">
         {isFailed && (
           <div className="p-6 rounded-lg backdrop-hue-rotate-90 backdrop-opacity-20 flex flex-col items-center gap-6 bg-warning">
-            <h3>Good one. </h3>
+            <h3>Oh no!</h3>
             <p>You&apos;ve killed your tree</p>
             <Image
               src="/images/deadtree.svg"
